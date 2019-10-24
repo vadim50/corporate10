@@ -8,13 +8,17 @@ abstract class  Repository {
 
 	protected $model = false;
 
-	public function get(){
+	public function get($select='*',$take=false){
 
-		$builder = $this->model->select('*');
+		$builder = $this->model->select($select);
 
-		//dd($builder);
+		if($take){
+			$builder->take($take);
+		}
 
-		return $this->model->get();
+		//dd($builder->get());
+
+		return $builder->get();
 	}
 
 }
