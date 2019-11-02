@@ -15,10 +15,14 @@ class SiteController extends Controller
     protected $a_rep;
     protected $m_rep;
 
+    protected $keywords;
+    protected $meta_desc;
+    protected $title;
+
     protected $template;
     protected $vars = [];
 
-    protected $bar = false;
+    protected $bar = 'no';
 
     protected $contentRightBar = false;
     protected $contentLeftBar = false;
@@ -42,6 +46,15 @@ class SiteController extends Controller
 
             $this->vars['rightBar'] = $rightBar;
         }
+
+        $this->vars['bar'] = $this->bar;
+
+        $this->vars['keywords'] = $this->keywords;
+        $this->vars['meta_desc'] = $this->meta_desc;
+        $this->vars['title'] = $this->title;
+
+        $footer = view(env('THEME').'.footer')->render();
+        $this->vars['footer'] = $footer;
 
     	return view($this->template)->with($this->vars);
     }

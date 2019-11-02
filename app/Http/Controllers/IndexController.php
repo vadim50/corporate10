@@ -33,6 +33,9 @@ class IndexController extends SiteController
     public function index()
     {
         //
+        $this->keywords = 'Home Page';
+        $this->meta_desc = 'Home Page';
+        $this->title = 'Home Page';
 
 
 
