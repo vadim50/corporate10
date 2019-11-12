@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Repositories\PortfoliosRepository;
 use App\Repositories\ArticlesRepository;
 use App\Repositories\CommentsRepository;
+use App\Category;
+use DB;
 
 class ArticlesController extends SiteController
 {
@@ -31,10 +33,10 @@ class ArticlesController extends SiteController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($cat_alias = false) 
     {
         //
-        $articles = $this->getArticles();
+        $articles = $this->getArticles($cat_alias);
         //dd($articles);
 
         $content = view(env('THEME').'.articles_content')->with('articles',$articles)->render();
@@ -74,8 +76,19 @@ class ArticlesController extends SiteController
 
     public function getArticles($alias=false){
 
+        $where = false;
+
+         if($alias){
+            //$id = DB::table('categories')->where('alias','=',$alias)->first()->id;
+            $id = Category::select('id')->where('alias','=',$alias)->first()->id;
+            //$where = ['category_id',$id];
+
+            //dd($id);
+            $where = ['category_id',$id];
+        }
+
         $articles = $this->a_rep
-            ->get(['id','title','alias','created_at','img','desc','user_id','category_id'],false,true);
+            ->get(['id','title','alias','created_at','img','desc','user_id','category_id'],false,true,$where);
 
         //dd($articles);
         //return $articles;
@@ -111,9 +124,26 @@ class ArticlesController extends SiteController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($alias=false)
     {
         //
+        $article = $this->a_rep->one($alias,['comments'=>true]);
+
+        dd($article);
+
+        $content = view(env('THEME').'.article_content')->with('article',$article)->render();
+        $this->vars['content'] = $content;
+
+         $comments = $this->getComments(config('settings.resent_comments'));
+
+        $portfolios = $this->getPortfolios(config('settings.resent_portfolios'));
+
+
+        $this->contentRightBar = view(env('THEME').'.articleBar')
+        ->with(['comments'=>$comments,'portfolios'=>$portfolios])->render();
+        
+
+        return $this->renderOutput();
     }
 
     /**
